@@ -85,7 +85,7 @@ export default function Board({
 
   return (
     <DndContext sensors={sensors} onDragEnd={onDragEnd}>
-      <div className="flex gap-4 overflow-x-auto pb-4">
+      <div className="flex items-start gap-4 overflow-x-auto pb-4">
         {columns.map((col) => (
           <Column
             key={col.id}
@@ -109,14 +109,23 @@ function Column({
   const [title, setTitle] = useState("");
 
   return (
-    <div
+    <section
       ref={setNodeRef}
-      className={`w-72 shrink-0 rounded-lg p-3 ${isOver ? "bg-blue-100" : "bg-gray-100"}`}
+      className={`flex w-72 shrink-0 flex-col rounded-xl border bg-surface p-3 shadow-sm transition ${
+        isOver ? "border-accent ring-2 ring-accent/20" : "border-border"
+      }`}
     >
-      <h2 className="mb-3 font-semibold text-black">{col.title}</h2>
-      <div className="min-h-10 space-y-2">
+      <div className="mb-3 flex items-center justify-between px-1">
+        <h2 className="text-sm font-semibold tracking-tight">{col.title}</h2>
+        <span className="rounded-full bg-background px-2 py-0.5 text-xs font-medium text-muted">
+          {cards.length}
+        </span>
+      </div>
+
+      <div className="min-h-12 space-y-2">
         {cards.map((c) => <CardItem key={c.id} card={c} />)}
       </div>
+
       <form
         className="mt-3"
         onSubmit={(e) => {
@@ -129,11 +138,12 @@ function Column({
         <input
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          placeholder="+ Add card"
-          className="w-full rounded border bg-white p-2 text-sm text-black"
+          placeholder="+ Add a card"
+          maxLength={200}
+          className="w-full rounded-lg border border-transparent bg-background px-3 py-2 text-sm outline-none transition placeholder:text-muted focus:border-accent focus:ring-2 focus:ring-accent/20"
         />
       </form>
-    </div>
+    </section>
   );
 }
 
@@ -153,9 +163,12 @@ function CardItem({ card }: { card: CardT }) {
         transform: drag.transform
           ? `translate3d(${drag.transform.x}px, ${drag.transform.y}px, 0)`
           : undefined,
-        opacity: drag.isDragging ? 0.5 : 1,
       }}
-      className="cursor-grab rounded bg-white p-3 text-sm text-black shadow"
+      className={`cursor-grab select-none rounded-lg border bg-background p-3 text-sm shadow-sm transition active:cursor-grabbing ${
+        drag.isDragging
+          ? "z-10 scale-[1.02] border-accent opacity-90 shadow-lg"
+          : "border-border hover:border-accent/60"
+      }`}
     >
       {card.title}
     </div>
